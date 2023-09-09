@@ -1,7 +1,7 @@
 import { assert, stringToBytes } from '@metamask/utils';
 import {
   getPublicKey as getSecp256k1PublicKey,
-  Point,
+  ProjectivePoint,
   utils,
 } from '@noble/secp256k1';
 
@@ -38,25 +38,25 @@ export const publicAdd = (
     'Invalid tweak: Tweak must be a non-zero 32-byte Uint8Array.',
   );
 
-  const point = Point.fromHex(publicKey);
+  const point = ProjectivePoint.fromHex(publicKey);
 
   // The returned child key Ki is point(parse256(IL)) + Kpar.
   // This multiplies the tweak with the base point of the curve (Gx, Gy).
   // https://github.com/bitcoin/bips/blob/274fa400d630ba757bec0c03b35ebe2345197108/bip-0032.mediawiki#public-parent-key--public-child-key
-  const newPoint = point.add(Point.fromPrivateKey(tweak));
+  const newPoint = point.add(ProjectivePoint.fromPrivateKey(tweak));
   newPoint.assertValidity();
 
   return newPoint.toRawBytes(false);
 };
 
 export const compressPublicKey = (publicKey: Uint8Array): Uint8Array => {
-  const point = Point.fromHex(publicKey);
+  const point = ProjectivePoint.fromHex(publicKey);
   return point.toRawBytes(true);
 };
 
 export const decompressPublicKey = (publicKey: Uint8Array): Uint8Array => {
   // This calculates a point on the elliptic curve from a compressed public key. We can then use
   // this to get the uncompressed version of the public key.
-  const point = Point.fromHex(publicKey);
+  const point = ProjectivePoint.fromHex(publicKey);
   return point.toRawBytes(false);
 };
